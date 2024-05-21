@@ -1,7 +1,5 @@
 package com.ipen.ums.entity;
 
-import java.time.LocalDate;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,8 +30,8 @@ public class User {
 	@Email
 	@Column(unique = true)
 	private String email;
-	
-	private LocalDate dateOfBirth;
+
+	private String dateOfBirth;
 
 	public Long getId() {
 		return id;
@@ -75,11 +73,11 @@ public class User {
 		this.email = email;
 	}
 
-	public LocalDate getDateOfBirth() {
+	public String getDateOfBirth() {
 		return dateOfBirth;
 	}
 
-	public void setDateOfBirth(LocalDate dateOfBirth) {
+	public void setDateOfBirth(String dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 }

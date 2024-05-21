@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ipen.ums.entity.User;
 import com.ipen.ums.exception.ResourceNotFoundException;
+import com.ipen.ums.exception.UniqueConstraintViolationException;
 import com.ipen.ums.service.UserService;
 
 import jakarta.validation.Valid;
@@ -27,9 +28,15 @@ public class UserController {
 	private UserService userService;
 
 	@PostMapping("/")
-	public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-		User createdUser = userService.createUser(user);
-		return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+	public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
+		try {
+			User createdUser = userService.createUser(user);
+			return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+		} catch (UniqueConstraintViolationException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (IllegalArgumentException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@GetMapping("/{username}")
@@ -55,9 +62,9 @@ public class UserController {
 	}
 
 	@GetMapping("/email/{email}")
-	public ResponseEntity<List<User>> getUsersByEmail(@PathVariable String email) {
-		List<User> users = userService.getUsersByEmail(email);
-		return ResponseEntity.ok(users);
+	public ResponseEntity<?> getUsersByEmail(@PathVariable String email) {
+
+		return ResponseEntity.ok(userService.getUsersByEmail(email));
 	}
 
 	@PutMapping("/{id}")
@@ -65,8 +72,10 @@ public class UserController {
 		try {
 			User updatedUser = userService.updateUser(id, user);
 			return ResponseEntity.ok(updatedUser);
-		} catch (ResourceNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with ID " + id);
+		} catch (ResourceNotFoundException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+		} catch (UniqueConstraintViolationException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -75,7 +84,7 @@ public class UserController {
 		try {
 			userService.deleteUser(id);
 			return ResponseEntity.status(HttpStatus.OK).body("User with ID " + id + " deleted successfully");
-		} catch (ResourceNotFoundException e) {
+		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with ID " + id);
 		}
 	}
