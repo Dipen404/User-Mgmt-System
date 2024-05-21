@@ -1,8 +1,9 @@
 package com.ipen.ums.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ipen.ums.entity.User;
@@ -49,17 +51,35 @@ public class UserController {
 		}
 	}
 
+//	@GetMapping("/first-name/{firstName}")
+//	public ResponseEntity<List<User>> getUsersByFirstName(@PathVariable String firstName) {
+//		List<User> users = userService.getUsersByFirstName(firstName);
+//		return ResponseEntity.ok(users);
+//	}
 	@GetMapping("/first-name/{firstName}")
-	public ResponseEntity<List<User>> getUsersByFirstName(@PathVariable String firstName) {
-		List<User> users = userService.getUsersByFirstName(firstName);
-		return ResponseEntity.ok(users);
-	}
+    public ResponseEntity<Page<User>> getUsersByFirstName(
+            @PathVariable String firstName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users = userService.getUsersByFirstName(firstName, pageable);
+        return ResponseEntity.ok(users);
+    }
 
+//	@GetMapping("/last-name/{lastName}")
+//	public ResponseEntity<List<User>> getUsersByLastName(@PathVariable String lastName) {
+//		List<User> users = userService.getUsersByLastName(lastName);
+//		return ResponseEntity.ok(users);
+//	}
 	@GetMapping("/last-name/{lastName}")
-	public ResponseEntity<List<User>> getUsersByLastName(@PathVariable String lastName) {
-		List<User> users = userService.getUsersByLastName(lastName);
-		return ResponseEntity.ok(users);
-	}
+    public ResponseEntity<Page<User>> getUsersByLastName(
+            @PathVariable String lastName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users = userService.getUsersByLastName(lastName, pageable);
+        return ResponseEntity.ok(users);
+    }
 
 	@GetMapping("/email/{email}")
 	public ResponseEntity<?> getUsersByEmail(@PathVariable String email) {

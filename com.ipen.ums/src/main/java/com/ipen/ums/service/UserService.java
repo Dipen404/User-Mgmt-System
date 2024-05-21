@@ -1,9 +1,10 @@
 package com.ipen.ums.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ipen.ums.entity.User;
@@ -39,18 +40,23 @@ public class UserService {
 		return userRepository.findByUsername(username)
 				.orElseThrow(() -> new ResourceNotFoundException("User not found with username " + username));
 	}
+	public Page<User> getUsersByFirstName(String firstName, Pageable pageable) {
+        return userRepository.findByFirstName(firstName, pageable);
+    }
+//	public List<User> getUsersByFirstName(String firstName) {
+//		return userRepository.findByFirstName(firstName);
+//	}
 
-	public List<User> getUsersByFirstName(String firstName) {
-		return userRepository.findByFirstName(firstName);
-	}
-
-	public List<User> getUsersByLastName(String lastName) {
-		return userRepository.findByLastName(lastName);
-	}
+//	public List<User> getUsersByLastName(String lastName) {
+//		return userRepository.findByLastName(lastName);
+//	}
+	public Page<User> getUsersByLastName(String lastName, Pageable pageable) {
+        return userRepository.findByLastName(lastName, pageable);
+    }
 
 	public User getUsersByEmail(String email) {
 		return userRepository.findByEmail(email)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found with username " + email));
+				.orElseThrow(() -> new ResourceNotFoundException("User not found with email " + email));
 	}
 
 	public User updateUser(Long id, User updatedUser) {
